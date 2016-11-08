@@ -79,9 +79,6 @@ import com.android.internal.telephony.uicc.UiccCardApplication;
 import com.android.internal.telephony.uicc.UiccController;
 import com.android.internal.telephony.ServiceStateTracker;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.BufferedReader;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -1333,39 +1330,6 @@ public class GSMPhone extends PhoneBase {
             mCi.setCLIR(clirSetting, null);
         }
     }
-    
-    /* Dirty IMEI/IMEISV for mint2g*/
-    public static boolean isImeiRead = false;
-    public static boolean isImeiSVRead = false;
-    
-    public String readImei() {
-    	/*BufferedReader br; 
-    	String line = "";
-	try {
-		br = new BufferedReader(new FileReader("/efs/imeino1"));
-   		 line = br.readLine();
-   	 	br.close();
-	} catch (IOException e) {
-		Rlog.e(LOG_TAG, "Dirty Read (IMEI) : File IO error");
-	}
-	Rlog.d(LOG_TAG, "Dirty Read (IMEI) : " + line);
-	isImeiRead = true;*/
-	return "123456789012345";
-    }
-    public String readImeiSV() {
-    	/*BufferedReader br;// = new BufferedReader(new FileReader("/efs/imeinof"));
-    	String line = "";
-	try {
-		br = new BufferedReader(new FileReader("/efs/imeinof"));
-   		 line = br.readLine();
-   	 	br.close();
-	} catch (IOException e) {
-		Rlog.e(LOG_TAG, "Dirty Read (IMEISV) : File IO error");
-	}
-	Rlog.d(LOG_TAG, "Dirty Read (IMEISV) : " + line);
-	isImeiSVRead = true;*/
-	return "01";
-    }
 
     @Override
     public void handleMessage (Message msg) {
@@ -1377,12 +1341,6 @@ public class GSMPhone extends PhoneBase {
                     "[" + msg.what + "] while being destroyed. Ignoring.");
             return;
         }
-        
-        if(!isImeiRead)
-        	mImei = readImei();
-        if(!isImeiSVRead)
-        	mImeiSv = readImeiSV();
-        
         switch (msg.what) {
             case EVENT_RADIO_AVAILABLE: {
                 mCi.getBasebandVersion(
@@ -1437,8 +1395,8 @@ public class GSMPhone extends PhoneBase {
                 if (ar.exception != null) {
                     break;
                 }
-		
-                //mImei = (String)ar.result;
+
+                mImei = (String)ar.result;
             break;
 
             case EVENT_GET_IMEISV_DONE:
@@ -1448,7 +1406,7 @@ public class GSMPhone extends PhoneBase {
                     break;
                 }
 
-                //mImeiSv = (String)ar.result;
+                mImeiSv = (String)ar.result;
             break;
 
             case EVENT_USSD:
